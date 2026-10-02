@@ -96,8 +96,10 @@ func UnescapeID(in string) (string, error) {
 	for i := 0; i < len(in); i++ {
 		buf.WriteByte(in[i])
 
-		if i < len(in)-1 && in[i] == '`' {
-			if in[i+1] == '`' {
+		// Every inner backtick must be doubled, including one that is the
+		// last inner character (e.g. "`a``" is invalid, while "`a```" is "a`").
+		if in[i] == '`' {
+			if i+1 < len(in) && in[i+1] == '`' {
 				i++ // halves the number of backticks
 			} else {
 				return "", fmt.Errorf("UnescapeID err: unexpected single backtick at position %d in '%s'", i, in)

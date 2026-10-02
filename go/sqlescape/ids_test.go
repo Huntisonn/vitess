@@ -128,6 +128,27 @@ func TestUnescapeID(t *testing.T) {
 			out: "",
 			err: true,
 		},
+		// An unescaped backtick right before the closing backtick is invalid.
+		{
+			in:  "```",
+			out: "",
+			err: true,
+		},
+		{
+			in:  "`a``",
+			out: "",
+			err: true,
+		},
+		{
+			in:  "`a```",
+			out: "a`",
+			err: false,
+		},
+		{
+			in:  "````",
+			out: "`",
+			err: false,
+		},
 	}
 	for _, tc := range testcases {
 		t.Run(tc.in, func(t *testing.T) {
